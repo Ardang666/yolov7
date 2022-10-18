@@ -32,6 +32,7 @@ def detect(save_img=False):
 
     # Load model
     model = attempt_load(weights, map_location=device)  # load FP32 model
+    # print("model:", model)
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(imgsz, s=stride)  # check img_size
 
@@ -59,6 +60,8 @@ def detect(save_img=False):
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in names]
+    print("names: ", names)
+    print("colors: ", colors)
 
     # Run inference
     if device.type != 'cpu':
@@ -85,7 +88,14 @@ def detect(save_img=False):
         # Inference
         t1 = time_synchronized()
         with torch.no_grad():   # Calculating gradients would cause a GPU memory leak
-            pred = model(img, augment=opt.augment)[0]
+            pred = model(img, augment=opt.augment)
+            print("### len(pred):", len(pred))
+            print("### pred[0].shape:", pred[0].shape)
+            print("### len(pred[1]):", len(pred[1]))
+            print("### pred[1][0].shape:", pred[1][0].shape)
+            print("### pred[1][1].shape:", pred[1][1].shape)
+            print("### pred[1][2].shape:", pred[1][2].shape)
+            pred = pred[0]
         t2 = time_synchronized()
 
         # Apply NMS
